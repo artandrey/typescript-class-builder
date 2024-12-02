@@ -49,7 +49,7 @@ test('should return instance of class', () => {
 
 test('builder should contain property getter and setter', () => {
   expectTypeOf(MyClass.builder('requiredProperty').optionalProperty).toEqualTypeOf<
-    ((arg: string) => IBuilder<MyClassOptionals, MyClass>) & (() => string)
+    ((arg: string | undefined) => IBuilder<MyClassOptionals, MyClass>) & (() => string | undefined)
   >();
 });
 
@@ -60,7 +60,7 @@ test('builder should contain property setter', () => {
 });
 
 test('builder should contain property getter', () => {
-  expectTypeOf(MyClass.builder('requiredProperty').optionalProperty()).toEqualTypeOf<string>();
+  expectTypeOf(MyClass.builder('requiredProperty').optionalProperty()).toEqualTypeOf<string | undefined>();
 });
 
 test('setter should accept correct value', () => {
