@@ -5,7 +5,7 @@
  * Note: `globalThis` is the standardized approach however it has been added to
  * Node.js in version 12. We need to include this snippet until Node 12 EOL.
  */
-export function getGlobal() {
+export function getGlobal(): Record<string, unknown> {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
   }
@@ -29,4 +29,6 @@ export function getGlobal() {
     // @ts-ignore: Cannot find name 'self'.
     return self;
   }
+
+  throw new Error('Failed to get global object');
 }

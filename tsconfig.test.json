@@ -6,7 +6,8 @@
     "types": ["vitest/globals"],
     "paths": {
       "~lib/*": ["./src/lib/*"]
-    }
+    },
+    "experimentalDecorators": true
   },
   "include": ["src/tests/**/*.spec.ts"]
 }

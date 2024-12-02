@@ -1,4 +1,5 @@
 import path from 'path';
+import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -10,4 +11,14 @@ export default defineConfig({
       '~lib': path.resolve(__dirname, './src/lib'),
     },
   },
+  plugins: [
+    swc.vite({
+      jsc: {
+        parser: {
+          syntax: 'typescript',
+          decorators: true,
+        },
+      },
+    }),
+  ],
 });
