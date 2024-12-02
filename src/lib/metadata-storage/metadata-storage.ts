@@ -66,7 +66,6 @@ export class MetadataStorage {
         return metadataFromTarget;
       }
     }
-    console.log('ancestors', this.getAncestors(target));
 
     for (const ancestor of this.getAncestors(target) ?? []) {
       const ancestorMetadataMap = metadatas.get(ancestor);
