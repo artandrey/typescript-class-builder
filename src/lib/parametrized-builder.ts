@@ -36,12 +36,50 @@ function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, un
   return result;
 }
 
-export function ParametrizedBuilder<T extends InstansicableClazz, O = ClazzInstance<T>>(
-  classConstructor: T,
-  parameters: ConstructorParameters<T>,
-  template?: Partial<O> | null,
-  override?: Partial<O> | null,
-): IBuilder<O, ClazzInstance<T>> {
+/**
+ * Creates a builder for a class with required constructor parameters and optional properties.
+ *
+ * @param classConstructor - The class to build
+ * @param parameters - Required constructor parameters
+ * @param template - Optional initial values
+ * @param override - Optional values to override at build time
+ *
+ * @example
+ * ```typescript
+ * class MyClass {
+ *   @OptionalBuilderProperty()
+ *   private _optionalProperty?: string;
+ *
+ *   constructor(public requiredProperty: string) {}
+ * }
+ *
+ * // Basic usage
+ * const instance = ParametrizedBuilder(MyClass, ['required'])
+ *   .optionalProperty('optional')
+ *   .build();
+ *
+ * // With template
+ * const withTemplate = ParametrizedBuilder(
+ *   MyClass,
+ *   ['required'],
+ *   { optionalProperty: 'template' }
+ * ).build();
+ *
+ * // With override
+ * const withOverride = ParametrizedBuilder(
+ *   MyClass,
+ *   ['required'],
+ *   null,
+ *   { optionalProperty: 'override' }
+ * ).build();
+ * ```
+ */
+export function ParametrizedBuilder<TClass extends InstansicableClazz, TOptionals = ClazzInstance<TClass>>(
+  classConstructor: TClass,
+  parameters: ConstructorParameters<TClass>,
+  template?: Partial<TOptionals> | null,
+  override?: Partial<TOptionals> | null,
+): IBuilder<TOptionals, ClazzInstance<TClass>> {
   const built: Record<string, unknown> = template ? Object.assign({}, template) : {};
 
   const builder = new Proxy(
@@ -52,12 +90,12 @@ export function ParametrizedBuilder<T extends InstansicableClazz, O = ClazzInsta
           if (override) {
             Object.assign(built, override);
           }
-          const obj: T = new classConstructor(...parameters);
+          const obj: TClass = new classConstructor(...parameters);
 
           return () => {
             try {
               return Object.assign(
-                obj as T & Record<string, unknown>,
+                obj as TClass & Record<string, unknown>,
                 mapDesiredToActualOrReturnAsIs(classConstructor, built) as object,
               );
             } catch (error) {
@@ -84,5 +122,5 @@ export function ParametrizedBuilder<T extends InstansicableClazz, O = ClazzInsta
     },
   );
 
-  return builder as IBuilder<O, ClazzInstance<T>>;
+  return builder as IBuilder<TOptionals, ClazzInstance<TClass>>;
 }
