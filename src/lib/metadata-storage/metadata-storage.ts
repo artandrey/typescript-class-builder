@@ -34,10 +34,10 @@ export class MetadataStorage {
   }
 
   private getMetadata<T extends OptionalBuilderPropertyMetadata>(
-    metadatas: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
+    metadataMap: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
     target: Clazz,
   ): ClassMetadata<T>[] {
-    const metadataFromTargetMap = metadatas.get(target);
+    const metadataFromTargetMap = metadataMap.get(target);
     let metadataFromTarget: ClassMetadata<T>[] = [];
     if (metadataFromTargetMap) {
       metadataFromTarget = Array.from(metadataFromTargetMap.values());
@@ -45,7 +45,7 @@ export class MetadataStorage {
 
     const metadataFromAncestors: ClassMetadata<T>[] = [];
     for (const ancestor of this.getAncestors(target) ?? []) {
-      const ancestorMetadataMap = metadatas.get(ancestor);
+      const ancestorMetadataMap = metadataMap.get(ancestor);
       if (ancestorMetadataMap) {
         metadataFromAncestors.push(...Array.from(ancestorMetadataMap.values()));
       }
@@ -55,11 +55,11 @@ export class MetadataStorage {
   }
 
   private findMetadata<T extends OptionalBuilderPropertyMetadata>(
-    metadatas: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
+    metadataMap: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
     target: Clazz,
     propertyKey: PropertyKey,
   ): ClassMetadata<T> | undefined {
-    const metadataFromTargetMap = metadatas.get(target);
+    const metadataFromTargetMap = metadataMap.get(target);
     if (metadataFromTargetMap) {
       const metadataFromTarget = metadataFromTargetMap.get(propertyKey);
       if (metadataFromTarget) {
@@ -68,7 +68,7 @@ export class MetadataStorage {
     }
 
     for (const ancestor of this.getAncestors(target) ?? []) {
-      const ancestorMetadataMap = metadatas.get(ancestor);
+      const ancestorMetadataMap = metadataMap.get(ancestor);
       if (ancestorMetadataMap) {
         const ancestorResult = ancestorMetadataMap.get(propertyKey);
         if (ancestorResult) {

@@ -1,1 +1,1 @@
-export * from './optional-builder-propery';
+export * from './optional-builder-property';

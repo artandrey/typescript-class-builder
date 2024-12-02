@@ -5,7 +5,7 @@ export interface WithOptionalProperty {
 }
 
 export interface WithTransformedProperty {
-  _OPTIONALPROPERTY?: string;
+  _optionalPropertyTransformed?: string;
 }
 
 describe('builder', () => {
@@ -93,12 +93,12 @@ describe('builder', () => {
 
   it('should transform property keys', () => {
     class MyClass {
-      @OptionalBuilderProperty({ transformKey: (key) => key.toUpperCase() })
+      @OptionalBuilderProperty({ transformKey: (key) => key.concat('Transformed') })
       private _optionalProperty?: string;
     }
 
     const result = ParametrizedBuilder<typeof MyClass, WithTransformedProperty>(MyClass, [])
-      ._OPTIONALPROPERTY('optional property value')
+      ._optionalPropertyTransformed('optional property value')
       .build();
 
     expect(result).toEqual({
