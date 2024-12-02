@@ -1,5 +1,5 @@
 import { ParametrizedBuilder } from './parametrized-builder';
-import { InstansicableClazz } from './types';
+import { InstantiableClazz } from './types';
 
 /**
  * Creates a builder factory method for a class that can be used as a static method.
@@ -31,7 +31,7 @@ import { InstansicableClazz } from './types';
  * ```
  */
 export function createBuilderMethodFactory<TOptionals>() {
-  return function <TClass extends InstansicableClazz>(classConstructor: TClass) {
+  return function <TClass extends InstantiableClazz>(classConstructor: TClass) {
     return (...args: ConstructorParameters<TClass>) => {
       return ParametrizedBuilder<TClass, TOptionals>(classConstructor, args);
     };

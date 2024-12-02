@@ -1,3 +1,3 @@
-import { InstansicableClazz } from './clazz';
+import { InstantiableClazz } from './clazz';
 
-export type ClazzInstance<T> = T extends InstansicableClazz<infer U> ? U : never;
+export type ClazzInstance<T> = T extends InstantiableClazz<infer U> ? U : never;

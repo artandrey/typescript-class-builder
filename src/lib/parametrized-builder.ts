@@ -1,5 +1,5 @@
 import { metadataStorage } from './storage';
-import { Clazz, ClazzInstance, IBuilder, InstansicableClazz } from './types';
+import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
 
 function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, unknown>) {
   const mappings = metadataStorage.getOptionalProperties(target.prototype);
@@ -74,7 +74,7 @@ function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, un
  * ).build();
  * ```
  */
-export function ParametrizedBuilder<TClass extends InstansicableClazz, TOptionals = ClazzInstance<TClass>>(
+export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals = ClazzInstance<TClass>>(
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
   template?: Partial<TOptionals> | null,
