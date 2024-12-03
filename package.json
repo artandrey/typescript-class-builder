@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Tool to implement builder pattern that actually uses class constructor with ease",
   "private": false,
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start:dev": "ts-node src/main.ts --watch",
     "test:dev": "vitest",
