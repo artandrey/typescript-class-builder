@@ -1,2 +1,3 @@
 - [ ] Make builder configurable to add ability to ignore properties not marked with `@OptionalBuilderProperty`
 - [x] Rename `createBuilderMethodFactory` to `toBuilder` as `toBuilderMethod(MyClass).withOptionals<MyClassOptionals>()` and `toBuilderMethod(MyClass).classAsOptionals()` ?
+- [ ] Determine where generic type `TClass` is used as class type and class instance type and make it more explicit.
