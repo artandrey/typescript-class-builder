@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "pre-commit": "lint-staged",
-    "build": "tsup"
+    "build": "tsup",
+    "publish": "changeset publish"
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,ts}": [
