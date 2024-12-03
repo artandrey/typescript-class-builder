@@ -1,4 +1,4 @@
 {
   "words": ["clazz"],
-  "ignorePaths": ["eslint.config.mjs", "package.json", "pnpm-lock.yaml", "vitest.config.mts"]
+  "ignorePaths": ["eslint.config.mjs", "package.json", "pnpm-lock.yaml", "vitest.config.mts", ".npmignore"]
 }
