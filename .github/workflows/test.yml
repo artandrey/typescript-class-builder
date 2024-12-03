@@ -1,0 +1,13 @@
+name: Test
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Test check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup
+      - name: Test
+        run: pnpm run test

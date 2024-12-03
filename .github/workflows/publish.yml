@@ -9,22 +9,18 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test
-        uses: ./.github/workflows/ci.yml@test
+    uses: ./.github/workflows/test.yml
+
   lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Lint
-        uses: ./.github/workflows/ci.yml@lint
+    uses: ./.github/workflows/lint.yml
 
   publish:
     needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
+      - uses: ./.github/actions/setup
       - name: Build
-        uses: ./.github/workflows/ci.yml@build
+        run: pnpm run build
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
