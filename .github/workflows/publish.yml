@@ -18,7 +18,8 @@ jobs:
     needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Build
         run: pnpm run build
       - name: Create Release Pull Request or Publish

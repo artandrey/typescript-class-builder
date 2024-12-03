@@ -8,7 +8,8 @@ jobs:
     name: Linting and formatting check
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Lint
         run: pnpm run lint
       - name: Format
