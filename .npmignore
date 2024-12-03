@@ -6,10 +6,12 @@ tsconfig.src.json
 tsconfig.prod.json
 tsconfig.test.json
 tsup.config.ts
-vitest.config.ts
+vitest.config.mts
 pnpm-lock.yaml
 cspell.json
 eslint.config.mjs
 improvements.md
 .husky
+.prettierrc
+.changeset
 
