@@ -1,0 +1,2 @@
+- [ ] Make builder configurable to add ability to ignore properties not marked with `@OptionalBuilderProperty`
+- [x] Rename `createBuilderMethodFactory` to `toBuilder` as `toBuilderMethod(MyClass).withOptionals<MyClassOptionals>()` and `toBuilderMethod(MyClass).classAsOptionals()` ?

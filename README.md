@@ -3,7 +3,7 @@
 Inspired by [builder-pattern](https://www.npmjs.com/package/builder-pattern) npm package.
 
 ```typescript
-import { OptionalBuilderProperty, createBuilderMethodFactory } from 'lib';
+import { OptionalBuilderProperty, toBuilderMethod } from 'lib';
 
 interface MyClassOptionals {
   optionalProperty: string;
@@ -23,7 +23,7 @@ class MyClass {
     this._requiredProperty = requiredProperty;
   }
 
-  public static builder = createBuilderMethodFactory<MyClassOptionals>()(MyClass);
+  public static builder = toBuilderMethod(MyClass).withOptionals<MyClassOptionals>();
 
   get requiredProperty(): string {
     return this._requiredProperty;

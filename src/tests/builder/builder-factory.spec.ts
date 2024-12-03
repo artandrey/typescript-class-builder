@@ -1,12 +1,31 @@
-import { createBuilderMethodFactory } from '~lib/create-builder-method-factory';
-import { OptionalBuilderProperty } from '~lib/index';
+import { OptionalBuilderProperty, toBuilderMethod } from '~lib/index';
 
 interface MyClassOptionals {
   optionalProperty?: string;
 }
 
 describe('Builder factory', () => {
-  it('should create builder', () => {
+  it('should create builder with class as optionals', () => {
+    class MyClass {
+      private _requiredProperty: string;
+
+      constructor(requiredProperty: string) {
+        this._requiredProperty = requiredProperty;
+      }
+
+      get requiredProperty(): string {
+        return this._requiredProperty;
+      }
+
+      public static builder = toBuilderMethod(MyClass).classAsOptionals();
+    }
+
+    const result = MyClass.builder('requiredProperty').build();
+
+    expect(result).toEqual({ _requiredProperty: 'requiredProperty' });
+  });
+
+  it('should create builder with optionals', () => {
     class MyClass {
       private _requiredProperty: string;
       @OptionalBuilderProperty()
@@ -24,7 +43,7 @@ describe('Builder factory', () => {
         return this._optionalProperty;
       }
 
-      public static builder = createBuilderMethodFactory<MyClassOptionals>()(MyClass);
+      public static builder = toBuilderMethod(MyClass).withOptionals<MyClassOptionals>();
     }
 
     const result = MyClass.builder('requiredProperty').optionalProperty('optionalProperty').build();
@@ -53,7 +72,7 @@ describe('Builder factory', () => {
         return this._optionalProperty;
       }
 
-      public static builder = createBuilderMethodFactory<MyClassOptionals>()(MyClass);
+      public static builder = toBuilderMethod(MyClass).withOptionals<MyClassOptionals>();
     }
 
     const result = MyClass.builder('requiredProperty').optionalProperty('optionalProperty').build();
