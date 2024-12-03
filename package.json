@@ -1,5 +1,5 @@
 {
-  "name": "class-builder",
+  "name": "class-constructor",
   "version": "0.0.1",
   "description": "Tool to implement builder pattern that actually uses class constructor with ease",
   "private": false,
