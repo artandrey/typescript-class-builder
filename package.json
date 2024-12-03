@@ -1,7 +1,7 @@
 {
-  "name": "my-typescript-starter",
-  "version": "1.0.0",
-  "description": "Typescript starter for my projects",
+  "name": "class-builder",
+  "version": "0.0.1",
+  "description": "Tool to implement builder pattern that actually uses class constructor with ease",
   "scripts": {
     "start:dev": "ts-node src/main.ts --watch",
     "test:dev": "vitest",
@@ -20,7 +20,11 @@
     ],
     "**/*.{ts,tsx}": "tsc-files --noEmit"
   },
-  "keywords": [],
+  "keywords": [
+    "class",
+    "builder",
+    "pattern"
+  ],
   "author": "Andrii Artemenko",
   "license": "MIT",
   "devDependencies": {
