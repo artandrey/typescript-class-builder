@@ -1,35 +1,10 @@
-import { ClassMetadata, Clazz, OptionalBuilderPropertyMetadata } from '../types';
+import { ClassMetadata, Clazz } from '../types';
 import { BuilderAccessorsMetadata } from '../types/builder-accessors-metadata';
 
 export class MetadataStorage {
-  private readonly _optionalBuilderPropertyMetadata: Map<
-    Clazz,
-    Map<PropertyKey, ClassMetadata<OptionalBuilderPropertyMetadata>>
-  > = new Map();
   private readonly _builderAccessorsMetadata: Map<Clazz, Map<PropertyKey, ClassMetadata<BuilderAccessorsMetadata>>> =
     new Map();
   private _ancestorsMap = new Map<Clazz, Clazz[]>();
-
-  addOptionalPropertyMetadata(metadata: ClassMetadata<OptionalBuilderPropertyMetadata>): void {
-    if (!this._optionalBuilderPropertyMetadata.has(metadata.target)) {
-      this._optionalBuilderPropertyMetadata.set(
-        metadata.target,
-        new Map<PropertyKey, ClassMetadata<OptionalBuilderPropertyMetadata>>(),
-      );
-    }
-    this._optionalBuilderPropertyMetadata.get(metadata.target)!.set(metadata.propertyKey, metadata);
-  }
-
-  findOptionalPropertyMetadata(
-    target: Clazz,
-    propertyName: string,
-  ): ClassMetadata<OptionalBuilderPropertyMetadata> | undefined {
-    return this.findMetadata(this._optionalBuilderPropertyMetadata, target, propertyName);
-  }
-
-  getOptionalProperties(target: Clazz): ClassMetadata<OptionalBuilderPropertyMetadata>[] {
-    return this.getMetadata(this._optionalBuilderPropertyMetadata, target);
-  }
 
   addBuilderAccessorsMetadata(metadata: ClassMetadata<BuilderAccessorsMetadata>): void {
     if (!this._builderAccessorsMetadata.has(metadata.target)) {
@@ -53,7 +28,6 @@ export class MetadataStorage {
   }
 
   clear(): void {
-    this._optionalBuilderPropertyMetadata.clear();
     this._ancestorsMap.clear();
     this._builderAccessorsMetadata.clear();
   }

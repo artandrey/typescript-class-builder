@@ -1,41 +1,6 @@
 import { metadataStorage } from './storage';
-import { ClassMetadata, Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
+import { ClassMetadata, ClazzInstance, IBuilder, InstantiableClazz } from './types';
 import { BuilderAccessorsMetadata } from './types/builder-accessors-metadata';
-
-function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, unknown>) {
-  const mappings = metadataStorage.getOptionalProperties(target.prototype);
-
-  if (!mappings) return values;
-
-  const asIs = Object.keys(values)
-    .filter((key) => !mappings.some((mapping) => mapping.desiredPropertyKey === key))
-    .reduce(
-      (asIs, key) => {
-        asIs[key] = values[key];
-        return asIs;
-      },
-      {} as Record<string, unknown>,
-    );
-
-  const result = mappings.reduce(
-    (result, mapping) => {
-      if (!(mapping.desiredPropertyKey in values)) {
-        return result;
-      }
-      const value = values[mapping.desiredPropertyKey];
-      if (typeof mapping.propertyKey === 'symbol') {
-        throw new Error(
-          `Spotted symbol property during building class: ${target.name}. Symbol as property key is not supported. Property: ${mapping.propertyKey.toString()}`,
-        );
-      }
-      result[mapping.propertyKey] = value;
-      return result;
-    },
-    { ...asIs } as Record<string, unknown>,
-  );
-
-  return result;
-}
 
 /**
  * Creates a builder for a class with required constructor parameters and optional properties.
@@ -77,7 +42,6 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
 ): IBuilder<TOptionals, ClazzInstance<TClass>> {
-  const built: Record<string, unknown> = {};
   const instance: TClass = new classConstructor(...parameters);
   const propertyNames = Object.getOwnPropertyNames(instance);
 
@@ -93,19 +57,7 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
       get(target, prop) {
         if ('build' === prop) {
           return () => {
-            try {
-              return Object.assign(
-                instance as TClass & Record<string, unknown>,
-                mapDesiredToActualOrReturnAsIs(classConstructor, built) as object,
-              );
-            } catch (error) {
-              if (error instanceof Error) {
-                throw new Error(
-                  `${error.message}. Probably you forgot to add @OptionalBuilderProperty() decorator to private property with underscore and builder is trying to reach it through getter`,
-                );
-              }
-              throw error;
-            }
+            return instance;
           };
         }
 

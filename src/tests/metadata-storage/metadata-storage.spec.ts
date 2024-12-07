@@ -1,8 +1,8 @@
 import { MetadataStorage } from '~lib/metadata-storage';
-import { ClassMetadata, OptionalBuilderPropertyMetadata } from '~lib/types';
+import { ClassMetadata } from '~lib/types';
+import { BuilderAccessorsMetadata } from '~lib/types/builder-accessors-metadata';
 
-// Define the combined type at the top level
-type StoredOptionalPropertyMetadata = ClassMetadata<OptionalBuilderPropertyMetadata>;
+type StoredBuilderAccessorsMetadata = ClassMetadata<BuilderAccessorsMetadata>;
 
 describe('MetadataStorage', () => {
   let storage: MetadataStorage;
@@ -11,28 +11,29 @@ describe('MetadataStorage', () => {
     storage = new MetadataStorage();
   });
 
-  describe('addOptionalPropertyMetadata', () => {
+  describe('addBuilderAccessorsMetadata', () => {
     it('should store and retrieve metadata for a target class', () => {
       class TestClass {}
 
-      const metadata: StoredOptionalPropertyMetadata = {
+      const metadata: StoredBuilderAccessorsMetadata = {
         target: TestClass,
         propertyKey: 'testProp',
-        desiredPropertyKey: 'desiredProp',
+        get: () => {},
+        set: () => {},
       };
 
-      storage.addOptionalPropertyMetadata(metadata);
+      storage.addBuilderAccessorsMetadata(metadata);
 
-      const result = storage.findOptionalPropertyMetadata(TestClass, 'testProp');
+      const result = storage.findBuilderAccessorsMetadata(TestClass, 'testProp');
       expect(result).toEqual(metadata);
     });
   });
 
-  describe('findOptionalPropertyMetadata', () => {
+  describe('findBuilderAccessorsMetadata', () => {
     it('should return undefined for non-existent metadata', () => {
       class TestClass {}
 
-      const result = storage.findOptionalPropertyMetadata(TestClass, 'nonExistent');
+      const result = storage.findBuilderAccessorsMetadata(TestClass, 'nonExistent');
       expect(result).toBeUndefined();
     });
 
@@ -40,50 +41,54 @@ describe('MetadataStorage', () => {
       class ParentClass {}
       class ChildClass extends ParentClass {}
 
-      const metadata: StoredOptionalPropertyMetadata = {
+      const metadata: StoredBuilderAccessorsMetadata = {
         target: ParentClass,
         propertyKey: 'parentProp',
-        desiredPropertyKey: 'desiredProp',
+        get: () => {},
+        set: () => {},
       };
 
-      storage.addOptionalPropertyMetadata(metadata);
+      storage.addBuilderAccessorsMetadata(metadata);
 
-      const result = storage.findOptionalPropertyMetadata(ChildClass, 'parentProp');
+      const result = storage.findBuilderAccessorsMetadata(ChildClass, 'parentProp');
       expect(result).toEqual(metadata);
 
-      const childMetadata: StoredOptionalPropertyMetadata = {
+      const childMetadata: StoredBuilderAccessorsMetadata = {
         target: ChildClass,
         propertyKey: 'parentProp',
-        desiredPropertyKey: 'overriddenProp',
+        get: () => {},
+        set: () => {},
       };
 
-      storage.addOptionalPropertyMetadata(childMetadata);
-      const overriddenResult = storage.findOptionalPropertyMetadata(ChildClass, 'parentProp');
+      storage.addBuilderAccessorsMetadata(childMetadata);
+      const overriddenResult = storage.findBuilderAccessorsMetadata(ChildClass, 'parentProp');
       expect(overriddenResult).toEqual(childMetadata);
     });
   });
 
-  describe('getOptionalProperties', () => {
+  describe('getBuilderAccessors', () => {
     it('should return all properties including inherited ones', () => {
       class ParentClass {}
       class ChildClass extends ParentClass {}
 
-      const parentMetadata: StoredOptionalPropertyMetadata = {
+      const parentMetadata: StoredBuilderAccessorsMetadata = {
         target: ParentClass,
         propertyKey: 'parentProp',
-        desiredPropertyKey: 'desiredProp1',
+        get: () => {},
+        set: () => {},
       };
 
-      const childMetadata: StoredOptionalPropertyMetadata = {
+      const childMetadata: StoredBuilderAccessorsMetadata = {
         target: ChildClass,
         propertyKey: 'childProp',
-        desiredPropertyKey: 'desiredProp2',
+        get: () => {},
+        set: () => {},
       };
 
-      storage.addOptionalPropertyMetadata(parentMetadata);
-      storage.addOptionalPropertyMetadata(childMetadata);
+      storage.addBuilderAccessorsMetadata(parentMetadata);
+      storage.addBuilderAccessorsMetadata(childMetadata);
 
-      const results = storage.getOptionalProperties(ChildClass);
+      const results = storage.getBuilderAccessors(ChildClass);
       expect(results).toHaveLength(2);
       expect(results).toContainEqual(parentMetadata);
       expect(results).toContainEqual(childMetadata);
@@ -94,16 +99,17 @@ describe('MetadataStorage', () => {
     it('should remove all stored metadata', () => {
       class TestClass {}
 
-      const metadata: StoredOptionalPropertyMetadata = {
+      const metadata: StoredBuilderAccessorsMetadata = {
         target: TestClass,
         propertyKey: 'testProp',
-        desiredPropertyKey: 'desiredProp',
+        get: () => {},
+        set: () => {},
       };
 
-      storage.addOptionalPropertyMetadata(metadata);
+      storage.addBuilderAccessorsMetadata(metadata);
       storage.clear();
 
-      const result = storage.findOptionalPropertyMetadata(TestClass, 'testProp');
+      const result = storage.findBuilderAccessorsMetadata(TestClass, 'testProp');
       expect(result).toBeUndefined();
     });
   });
