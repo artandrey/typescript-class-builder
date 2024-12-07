@@ -10,5 +10,5 @@
     "strict": true,
     "experimentalDecorators": true
   },
-  "include": ["src/tests/**/*.spec.ts"]
+  "include": ["src/tests/**/*.spec.ts", "src/tests/benchmarks/**/*.bench.ts"]
 }

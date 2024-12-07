@@ -10,6 +10,9 @@ export default defineConfig({
     alias: {
       '~lib': path.resolve(__dirname, './src/lib'),
     },
+    benchmark: {
+      include: ['src/tests/benchmarks/**/*.bench.ts'],
+    },
   },
   plugins: [
     swc.vite({

@@ -10,6 +10,7 @@
     "start:dev": "ts-node src/main.ts --watch",
     "test:dev": "vitest",
     "test": "vitest run",
+    "test:bench": "vitest bench",
     "lint": "eslint --fix",
     "format": "prettier --write .",
     "prepare": "husky",
