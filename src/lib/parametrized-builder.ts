@@ -120,6 +120,12 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
             .flat() as ClassMetadata<BuilderAccessorsMetadata>[];
 
           if (0 === args.length) {
+            for (const accessorMetadata of accessorsMetadata) {
+              if (accessorMetadata.get) {
+                return accessorMetadata.get(instance);
+              }
+            }
+
             if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
               return instance[propertyKey as keyof TClass];
             }

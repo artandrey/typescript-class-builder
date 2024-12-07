@@ -174,4 +174,19 @@ describe('builder', () => {
     const result = builder.optionalProperty('value').build();
     expect(result.setterCalled).toBe(true);
   });
+
+  it('should get properties through getter', () => {
+    class MyClass {
+      @BuilderAccessors((target) => target.optionalProperty, (target, value) => (target._optionalProperty = value))
+      private _optionalProperty?: string;
+
+      get optionalProperty() {
+        return 'getter_' + this._optionalProperty;
+      }
+    }
+
+    const builder = ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []);
+    builder.optionalProperty('value');
+    expect(builder.optionalProperty()).toBe('getter_value');
+  });
 });
