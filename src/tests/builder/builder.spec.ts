@@ -131,4 +131,30 @@ describe('builder', () => {
 
     expect(() => ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []).optionalProperty()).toThrow();
   });
+
+  it('should not set through getter', () => {
+    class MyClass {
+      private _optionalProperty?: string;
+
+      get optionalProperty() {
+        return this._optionalProperty;
+      }
+    }
+
+    const builder = ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []);
+    expect(builder.optionalProperty('value').build()).toEqual({ _optionalProperty: 'value' });
+  });
+
+  it('should not set through setter', () => {
+    class MyClass {
+      private _optionalProperty?: string;
+
+      set optionalProperty(value: string) {
+        this._optionalProperty = value;
+      }
+    }
+
+    const builder = ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []);
+    expect(builder.optionalProperty('value').build()).toEqual({ _optionalProperty: 'value' });
+  });
 });
