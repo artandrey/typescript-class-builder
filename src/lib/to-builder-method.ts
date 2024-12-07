@@ -7,6 +7,27 @@ export interface BuilderMethodFactory<TClass extends InstantiableClazz> {
   classAsOptionals(): (...args: ConstructorParameters<TClass>) => IBuilder<TClass, ClazzInstance<TClass>>;
 }
 
+/**
+ * Creates a builder method factory for a class that can generate builders with different optional property configurations.
+ *
+ * @param clazz - The class to create a builder for
+ * @returns A factory object with methods to create different types of builders
+ *
+ * @example
+ * ```typescript
+ *
+ *  interface MyOptionals {
+ *    optional?: string;
+ *  }
+ *
+ *  class MyClass {
+ *    constructor(public required: string) {}
+ *    private _optional?: string;
+ *
+ *    static builder = toBuilderMethod(MyClass).withOptionals<MyOptionals>();
+ *  }
+ * ```
+ */
 export function toBuilderMethod<TClass extends InstantiableClazz>(clazz: TClass): BuilderMethodFactory<TClass> {
   return {
     withOptionals: <TOptionals>() => {

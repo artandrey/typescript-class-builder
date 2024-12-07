@@ -7,36 +7,8 @@ import { BuilderAccessorsMetadata } from './types/builder-accessors-metadata';
  *
  * @param classConstructor - The class to build
  * @param parameters - Required constructor parameters
+ * @returns A builder instance that provides fluent methods for setting optional properties
  *
- * @example
- * ```typescript
- * class MyClass {
- *   @OptionalBuilderProperty()
- *   private _optionalProperty?: string;
- *
- *   constructor(public requiredProperty: string) {}
- * }
- *
- * // Basic usage
- * const instance = ParametrizedBuilder(MyClass, ['required'])
- *   .optionalProperty('optional')
- *   .build();
- *
- * // With template
- * const withTemplate = ParametrizedBuilder(
- *   MyClass,
- *   ['required'],
- *   { optionalProperty: 'template' }
- * ).build();
- *
- * // With override
- * const withOverride = ParametrizedBuilder(
- *   MyClass,
- *   ['required'],
- *   null,
- *   { optionalProperty: 'override' }
- * ).build();
- * ```
  */
 export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals = ClazzInstance<TClass>>(
   classConstructor: TClass,
