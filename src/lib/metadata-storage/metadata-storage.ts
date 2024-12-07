@@ -1,10 +1,13 @@
 import { ClassMetadata, Clazz, OptionalBuilderPropertyMetadata } from '../types';
+import { BuilderAccessorsMetadata } from '../types/builder-accessors-metadata';
 
 export class MetadataStorage {
   private readonly _optionalBuilderPropertyMetadata: Map<
     Clazz,
     Map<PropertyKey, ClassMetadata<OptionalBuilderPropertyMetadata>>
   > = new Map();
+  private readonly _builderAccessorsMetadata: Map<Clazz, Map<PropertyKey, ClassMetadata<BuilderAccessorsMetadata>>> =
+    new Map();
   private _ancestorsMap = new Map<Clazz, Clazz[]>();
 
   addOptionalPropertyMetadata(metadata: ClassMetadata<OptionalBuilderPropertyMetadata>): void {
@@ -28,12 +31,34 @@ export class MetadataStorage {
     return this.getMetadata(this._optionalBuilderPropertyMetadata, target);
   }
 
+  addBuilderAccessorsMetadata(metadata: ClassMetadata<BuilderAccessorsMetadata>): void {
+    if (!this._builderAccessorsMetadata.has(metadata.target)) {
+      this._builderAccessorsMetadata.set(
+        metadata.target,
+        new Map<PropertyKey, ClassMetadata<BuilderAccessorsMetadata>>(),
+      );
+    }
+    this._builderAccessorsMetadata.get(metadata.target)!.set(metadata.propertyKey, metadata);
+  }
+
+  findBuilderAccessorsMetadata(
+    target: Clazz,
+    propertyName: string,
+  ): ClassMetadata<BuilderAccessorsMetadata> | undefined {
+    return this.findMetadata(this._builderAccessorsMetadata, target, propertyName);
+  }
+
+  getBuilderAccessors(target: Clazz): ClassMetadata<BuilderAccessorsMetadata>[] {
+    return this.getMetadata(this._builderAccessorsMetadata, target);
+  }
+
   clear(): void {
     this._optionalBuilderPropertyMetadata.clear();
     this._ancestorsMap.clear();
+    this._builderAccessorsMetadata.clear();
   }
 
-  private getMetadata<T extends OptionalBuilderPropertyMetadata>(
+  private getMetadata<T>(
     metadataMap: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
     target: Clazz,
   ): ClassMetadata<T>[] {
@@ -54,7 +79,7 @@ export class MetadataStorage {
     return metadataFromAncestors.concat(metadataFromTarget);
   }
 
-  private findMetadata<T extends OptionalBuilderPropertyMetadata>(
+  private findMetadata<T>(
     metadataMap: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
     target: Clazz,
     propertyKey: PropertyKey,

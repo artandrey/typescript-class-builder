@@ -1,4 +1,4 @@
-import { ParametrizedBuilder } from '~lib/index';
+import { BuilderAccessors, ParametrizedBuilder } from '~lib/index';
 
 export interface WithOptionalProperty {
   optionalProperty?: string;
@@ -156,5 +156,22 @@ describe('builder', () => {
 
     const builder = ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []);
     expect(builder.optionalProperty('value').build()).toEqual({ _optionalProperty: 'value' });
+  });
+
+  it('should set through specified setter', () => {
+    class MyClass {
+      public setterCalled = false;
+      @BuilderAccessors((target) => target._optionalProperty, (target, value) => (target.optionalProperty = value))
+      private _optionalProperty?: string;
+
+      set optionalProperty(value: string | undefined) {
+        this.setterCalled = true;
+        this._optionalProperty = value;
+      }
+    }
+
+    const builder = ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []);
+    const result = builder.optionalProperty('value').build();
+    expect(result.setterCalled).toBe(true);
   });
 });

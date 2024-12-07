@@ -1,5 +1,6 @@
 import { metadataStorage } from './storage';
-import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
+import { ClassMetadata, Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
+import { BuilderAccessorsMetadata } from './types/builder-accessors-metadata';
 
 function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, unknown>) {
   const mappings = metadataStorage.getOptionalProperties(target.prototype);
@@ -111,6 +112,12 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
         return (...args: unknown[]): unknown => {
           // If no arguments passed return current value.
           const propertyKey = prop.toString();
+          const accessorsMetadata = [
+            metadataStorage.findBuilderAccessorsMetadata(classConstructor, propertyKey),
+            metadataStorage.findBuilderAccessorsMetadata(classConstructor, `_${propertyKey}`),
+          ]
+            .filter(Boolean)
+            .flat() as ClassMetadata<BuilderAccessorsMetadata>[];
 
           if (0 === args.length) {
             if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
@@ -121,6 +128,13 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
             }
 
             throw new Error(`Property ${propertyKey} is not found in class ${classConstructor.name}`);
+          }
+
+          for (const accessorMetadata of accessorsMetadata) {
+            if (accessorMetadata.set) {
+              accessorMetadata.set(instance, args[0]);
+              return builder;
+            }
           }
 
           if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
