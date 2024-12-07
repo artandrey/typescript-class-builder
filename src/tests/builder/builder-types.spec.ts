@@ -1,13 +1,11 @@
-import { IBuilder, OptionalBuilderProperty, ParametrizedBuilder, toBuilderMethod } from '~lib/index';
+import { IBuilder, ParametrizedBuilder, toBuilderMethod } from '~lib/index';
 
 interface MyClassOptionals {
   optionalProperty?: string;
 }
 
 class MyClass {
-  @OptionalBuilderProperty()
   private _optionalProperty?: string;
-
   private _requiredProperty: string;
 
   constructor(requiredProperty: string) {

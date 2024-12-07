@@ -41,8 +41,6 @@ function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, un
  *
  * @param classConstructor - The class to build
  * @param parameters - Required constructor parameters
- * @param template - Optional initial values
- * @param override - Optional values to override at build time
  *
  * @example
  * ```typescript
@@ -77,25 +75,26 @@ function mapDesiredToActualOrReturnAsIs(target: Clazz, values: Record<string, un
 export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals = ClazzInstance<TClass>>(
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
-  template?: Partial<TOptionals> | null,
-  override?: Partial<TOptionals> | null,
 ): IBuilder<TOptionals, ClazzInstance<TClass>> {
-  const built: Record<string, unknown> = template ? Object.assign({}, template) : {};
+  const built: Record<string, unknown> = {};
+  const instance: TClass = new classConstructor(...parameters);
+  const propertyNames = Object.getOwnPropertyNames(instance);
+
+  const propertyNamePropertyDescriptorMap = new Map(
+    propertyNames
+      .map((propertyName) => [propertyName, Object.getOwnPropertyDescriptor(instance, propertyName)] as const)
+      .filter(([, descriptor]) => descriptor && !descriptor.get && !descriptor.set),
+  );
 
   const builder = new Proxy(
     {},
     {
       get(target, prop) {
         if ('build' === prop) {
-          if (override) {
-            Object.assign(built, override);
-          }
-          const obj: TClass = new classConstructor(...parameters);
-
           return () => {
             try {
               return Object.assign(
-                obj as TClass & Record<string, unknown>,
+                instance as TClass & Record<string, unknown>,
                 mapDesiredToActualOrReturnAsIs(classConstructor, built) as object,
               );
             } catch (error) {
@@ -111,12 +110,29 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
 
         return (...args: unknown[]): unknown => {
           // If no arguments passed return current value.
+          const propertyKey = prop.toString();
+
           if (0 === args.length) {
-            return built[prop.toString()];
+            if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
+              return instance[propertyKey as keyof TClass];
+            }
+            if (propertyNamePropertyDescriptorMap.get(`_${propertyKey}`)) {
+              return instance[`_${propertyKey}` as keyof TClass];
+            }
+
+            throw new Error(`Property ${propertyKey} is not found in class ${classConstructor.name}`);
           }
 
-          built[prop.toString()] = args[0];
-          return builder;
+          if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
+            instance[propertyKey as keyof TClass] = args[0] as TClass[keyof TClass];
+            return builder;
+          }
+          if (propertyNamePropertyDescriptorMap.get(`_${propertyKey}`)) {
+            instance[`_${propertyKey}` as keyof TClass] = args[0] as TClass[keyof TClass];
+            return builder;
+          }
+
+          throw new Error(`Property ${propertyKey} is not found in class ${classConstructor.name}`);
         };
       },
     },

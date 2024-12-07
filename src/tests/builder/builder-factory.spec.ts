@@ -1,4 +1,4 @@
-import { OptionalBuilderProperty, toBuilderMethod } from '~lib/index';
+import { toBuilderMethod } from '~lib/index';
 
 interface MyClassOptionals {
   optionalProperty?: string;
@@ -28,7 +28,6 @@ describe('Builder factory', () => {
   it('should create builder with optionals', () => {
     class MyClass {
       private _requiredProperty: string;
-      @OptionalBuilderProperty()
       private _optionalProperty?: string;
 
       constructor(requiredProperty: string) {
@@ -57,7 +56,6 @@ describe('Builder factory', () => {
   it('should pass properties to constructor', () => {
     class MyClass {
       private _requiredProperty: string;
-      @OptionalBuilderProperty()
       private _optionalProperty?: string;
 
       constructor(requiredProperty: string) {

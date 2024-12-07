@@ -1,4 +1,4 @@
-import { OptionalBuilderProperty, ParametrizedBuilder } from '~lib/index';
+import { ParametrizedBuilder } from '~lib/index';
 
 export interface WithOptionalProperty {
   optionalProperty?: string;
@@ -64,7 +64,6 @@ describe('builder', () => {
 
   it('should add optional private properties', () => {
     class MyClass {
-      @OptionalBuilderProperty()
       private _optionalProperty?: string;
       private _requiredProperty: string;
 
@@ -91,24 +90,8 @@ describe('builder', () => {
     });
   });
 
-  it('should transform property keys', () => {
-    class MyClass {
-      @OptionalBuilderProperty({ transformKey: (key) => key.concat('Transformed') })
-      private _optionalProperty?: string;
-    }
-
-    const result = ParametrizedBuilder<typeof MyClass, WithTransformedProperty>(MyClass, [])
-      ._optionalPropertyTransformed('optional property value')
-      .build();
-
-    expect(result).toEqual({
-      _optionalProperty: 'optional property value',
-    });
-  });
-
   it('should override default values', () => {
     class MyClass {
-      @OptionalBuilderProperty()
       private _optionalProperty?: string = 'default value';
     }
 
@@ -141,5 +124,11 @@ describe('builder', () => {
     builder.optionalProperty('value');
 
     expect(builder.optionalProperty()).toBe('value');
+  });
+
+  it('should throw error if property is not found', () => {
+    class MyClass {}
+
+    expect(() => ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, []).optionalProperty()).toThrow();
   });
 });
