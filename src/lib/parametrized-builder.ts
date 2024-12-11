@@ -1,6 +1,25 @@
 import { metadataStorage } from './storage';
-import { ClassMetadata, ClazzInstance, IBuilder, InstantiableClazz } from './types';
-import { BuilderAccessorsMetadata } from './types/builder-accessors-metadata';
+import { ClazzInstance, IBuilder, InstantiableClazz } from './types';
+
+const propertySetCache = new WeakMap<InstantiableClazz, Set<string>>();
+
+function getPropertySet<TClass extends InstantiableClazz>(classConstructor: TClass, instance: TClass): Set<string> {
+  let propertySet = propertySetCache.get(classConstructor);
+
+  if (!propertySet) {
+    const propertyNames = Object.getOwnPropertyNames(instance);
+    propertySet = new Set(
+      propertyNames.filter((propertyName) => {
+        const descriptor = Object.getOwnPropertyDescriptor(instance, propertyName);
+        return descriptor && !descriptor.get && !descriptor.set;
+      }),
+    );
+
+    propertySetCache.set(classConstructor, propertySet);
+  }
+
+  return propertySet;
+}
 
 /**
  * Creates a builder for a class with required constructor parameters and optional properties.
@@ -14,15 +33,9 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
 ): IBuilder<TOptionals, ClazzInstance<TClass>> {
-  const instance: TClass = new classConstructor(...parameters);
-  const propertyNames = Object.getOwnPropertyNames(instance);
+  const instance: ClazzInstance<TClass> = new classConstructor(...parameters);
 
-  const propertyNamePropertyDescriptorMap = new Map(
-    propertyNames
-      .map((propertyName) => [propertyName, Object.getOwnPropertyDescriptor(instance, propertyName)] as const)
-      .filter(([, descriptor]) => descriptor && !descriptor.get && !descriptor.set),
-  );
-
+  const propertySet = getPropertySet(classConstructor, instance);
   const builder = new Proxy(
     {},
     {
@@ -34,45 +47,42 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
         }
 
         return (...args: unknown[]): unknown => {
-          // If no arguments passed return current value.
-          const propertyKey = prop.toString();
-          const accessorsMetadata = [
-            metadataStorage.findBuilderAccessorsMetadata(classConstructor, propertyKey),
-            metadataStorage.findBuilderAccessorsMetadata(classConstructor, `_${propertyKey}`),
-          ]
-            .filter(Boolean)
-            .flat() as ClassMetadata<BuilderAccessorsMetadata>[];
+          const propertyKey = String(prop);
+          const privateKey = `_${propertyKey}`;
+
+          const accessorMetadata =
+            metadataStorage.findBuilderAccessorsMetadata(classConstructor, privateKey) ||
+            metadataStorage.findBuilderAccessorsMetadata(classConstructor, propertyKey);
 
           if (0 === args.length) {
-            for (const accessorMetadata of accessorsMetadata) {
-              if (accessorMetadata.get) {
-                return accessorMetadata.get(instance);
-              }
+            if (accessorMetadata?.get) {
+              return accessorMetadata.get(instance);
             }
 
-            if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
+            if (propertySet.has(propertyKey)) {
               return instance[propertyKey as keyof TClass];
             }
-            if (propertyNamePropertyDescriptorMap.get(`_${propertyKey}`)) {
-              return instance[`_${propertyKey}` as keyof TClass];
+            if (propertySet.has(privateKey)) {
+              return instance[privateKey as keyof TClass];
             }
 
             throw new Error(`Property ${propertyKey} is not found in class ${classConstructor.name}`);
           }
 
-          for (const accessorMetadata of accessorsMetadata) {
-            if (accessorMetadata.set) {
-              accessorMetadata.set(instance, args[0]);
-              return builder;
-            }
-          }
+          const value = args[0];
 
-          if (propertyNamePropertyDescriptorMap.get(propertyKey)) {
-            instance[propertyKey as keyof TClass] = args[0] as TClass[keyof TClass];
+          if (accessorMetadata?.set) {
+            accessorMetadata.set(instance, value);
             return builder;
           }
-          if (propertyNamePropertyDescriptorMap.get(`_${propertyKey}`)) {
-            instance[`_${propertyKey}` as keyof TClass] = args[0] as TClass[keyof TClass];
+
+          if (propertySet.has(propertyKey)) {
+            instance[propertyKey as keyof TClass] = value as TClass[keyof TClass];
+            return builder;
+          }
+
+          if (propertySet.has(privateKey)) {
+            instance[privateKey as keyof TClass] = value as TClass[keyof TClass];
             return builder;
           }
 
