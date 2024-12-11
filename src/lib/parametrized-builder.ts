@@ -1,15 +1,6 @@
 import { metadataStorage } from './storage';
 import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
-
-function getClassPlainProperties<TClass extends Clazz>(instance: TClass): Set<string> {
-  const propertyNames = Object.getOwnPropertyNames(instance);
-  return new Set(
-    propertyNames.filter((propertyName) => {
-      const descriptor = Object.getOwnPropertyDescriptor(instance, propertyName);
-      return descriptor && !descriptor.get && !descriptor.set;
-    }),
-  );
-}
+import { getClassPlainProperties } from './util/get-class-plain-properties';
 
 const classesWithInitializedAccessors = new Set<Clazz>();
 
