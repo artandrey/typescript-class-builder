@@ -23,7 +23,5 @@ export class UsingBuilder {
   private _optionalProperty19?: string;
   private _optionalProperty20?: string;
 
-  constructor() {}
-
   public static builder = toBuilderMethod(UsingBuilder).withOptionals<WithOptionalProperty>();
 }
