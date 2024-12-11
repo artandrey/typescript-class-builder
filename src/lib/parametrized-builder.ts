@@ -1,24 +1,38 @@
 import { metadataStorage } from './storage';
-import { ClazzInstance, IBuilder, InstantiableClazz } from './types';
+import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
 
-const propertySetCache = new WeakMap<InstantiableClazz, Set<string>>();
+function getClassPlainProperties<TClass extends Clazz>(instance: TClass): Set<string> {
+  const propertyNames = Object.getOwnPropertyNames(instance);
+  return new Set(
+    propertyNames.filter((propertyName) => {
+      const descriptor = Object.getOwnPropertyDescriptor(instance, propertyName);
+      return descriptor && !descriptor.get && !descriptor.set;
+    }),
+  );
+}
 
-function getPropertySet<TClass extends InstantiableClazz>(classConstructor: TClass, instance: TClass): Set<string> {
-  let propertySet = propertySetCache.get(classConstructor);
+const classesWithInitializedAccessors = new Set<Clazz>();
 
-  if (!propertySet) {
-    const propertyNames = Object.getOwnPropertyNames(instance);
-    propertySet = new Set(
-      propertyNames.filter((propertyName) => {
-        const descriptor = Object.getOwnPropertyDescriptor(instance, propertyName);
-        return descriptor && !descriptor.get && !descriptor.set;
-      }),
-    );
-
-    propertySetCache.set(classConstructor, propertySet);
-  }
-
-  return propertySet;
+function setAccessorsForClassProperties<TClass extends Clazz>(
+  classConstructor: TClass,
+  instance: ClazzInstance<TClass>,
+) {
+  const propertySet = getClassPlainProperties(instance);
+  propertySet.forEach((property) => {
+    const hasMetadata = !!metadataStorage.findBuilderAccessorsMetadata(classConstructor, property);
+    // do not override existing getters and setters metadata
+    if (!hasMetadata) {
+      metadataStorage.addBuilderAccessorsMetadata({
+        target: classConstructor,
+        propertyKey: property,
+        get: (target: object) => (target as Record<string, unknown>)[property],
+        set: (target: object, value: unknown) => {
+          (target as Record<string, unknown>)[property] = value;
+        },
+      });
+    }
+  });
+  classesWithInitializedAccessors.add(classConstructor);
 }
 
 /**
@@ -35,7 +49,10 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
 ): IBuilder<TOptionals, ClazzInstance<TClass>> {
   const instance: ClazzInstance<TClass> = new classConstructor(...parameters);
 
-  const propertySet = getPropertySet(classConstructor, instance);
+  if (!classesWithInitializedAccessors.has(classConstructor)) {
+    setAccessorsForClassProperties(classConstructor, instance);
+  }
+
   const builder = new Proxy(
     {},
     {
@@ -51,19 +68,12 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
           const privateKey = `_${propertyKey}`;
 
           const accessorMetadata =
-            metadataStorage.findBuilderAccessorsMetadata(classConstructor, privateKey) ||
-            metadataStorage.findBuilderAccessorsMetadata(classConstructor, propertyKey);
+            metadataStorage.findBuilderAccessorsMetadata(classConstructor, propertyKey) ||
+            metadataStorage.findBuilderAccessorsMetadata(classConstructor, privateKey);
 
           if (0 === args.length) {
             if (accessorMetadata?.get) {
               return accessorMetadata.get(instance);
-            }
-
-            if (propertySet.has(propertyKey)) {
-              return instance[propertyKey as keyof TClass];
-            }
-            if (propertySet.has(privateKey)) {
-              return instance[privateKey as keyof TClass];
             }
 
             throw new Error(`Property ${propertyKey} is not found in class ${classConstructor.name}`);
@@ -73,16 +83,6 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
 
           if (accessorMetadata?.set) {
             accessorMetadata.set(instance, value);
-            return builder;
-          }
-
-          if (propertySet.has(propertyKey)) {
-            instance[propertyKey as keyof TClass] = value as TClass[keyof TClass];
-            return builder;
-          }
-
-          if (propertySet.has(privateKey)) {
-            instance[privateKey as keyof TClass] = value as TClass[keyof TClass];
             return builder;
           }
 
