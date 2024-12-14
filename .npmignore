@@ -14,4 +14,5 @@ improvements.md
 .husky
 .prettierrc
 .changeset
+.benchmarks
 
