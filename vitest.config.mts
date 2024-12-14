@@ -12,6 +12,7 @@ export default defineConfig({
     },
     benchmark: {
       include: ['src/tests/benchmarks/**/*.bench.ts'],
+      outputJson: './.benchmarks/results.json',
     },
   },
   plugins: [
