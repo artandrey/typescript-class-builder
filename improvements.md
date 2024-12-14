@@ -5,3 +5,5 @@
 - [x] Update README.md to describe latest api
 - [x] Make metadataStorage private with all its types
 - [x] Move classesWithInitializedAccessors from [parametrized-builder.ts](./src/lib/parametrized-builder.ts) to metadataStorage
+
+- [ ] Replace proxy with prototype to improve performance
