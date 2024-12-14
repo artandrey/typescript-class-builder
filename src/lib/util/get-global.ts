@@ -5,7 +5,7 @@
  * Note: `globalThis` is the standardized approach however it has been added to
  * Node.js in version 12. We need to include this snippet until Node 12 EOL.
  */
-export function getGlobal(): Record<string, unknown> {
+export function getGlobal(): Record<PropertyKey, unknown> {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
   }

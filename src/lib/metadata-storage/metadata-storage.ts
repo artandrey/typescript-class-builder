@@ -1,5 +1,6 @@
-import { ClassPropertyMetadata, Clazz } from '../types';
-import { BuilderAccessorsMetadata } from '../types/builder-accessors-metadata';
+import { Clazz } from '../types';
+import { BuilderAccessorsMetadata } from './types/builder-accessors-metadata';
+import { ClassPropertyMetadata } from './types/class-metadata';
 
 export class MetadataStorage {
   private readonly _builderAccessorsMetadata: Map<

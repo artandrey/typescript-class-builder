@@ -1,6 +1,5 @@
 import { MetadataStorage } from '~lib/metadata-storage';
-import { ClassPropertyMetadata } from '~lib/types';
-import { BuilderAccessorsMetadata } from '~lib/types/builder-accessors-metadata';
+import { BuilderAccessorsMetadata, ClassPropertyMetadata } from '~lib/metadata-storage/types';
 
 type StoredBuilderAccessorsMetadata = ClassPropertyMetadata<BuilderAccessorsMetadata>;
 

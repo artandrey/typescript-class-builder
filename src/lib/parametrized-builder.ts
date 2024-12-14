@@ -1,4 +1,4 @@
-import { metadataStorage } from './storage';
+import { getMetadataStorage } from './storage';
 import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
 import { getClassPlainProperties } from './util/get-class-plain-properties';
 
@@ -6,6 +6,7 @@ function setAccessorsForClassProperties<TClass extends Clazz>(
   classConstructor: TClass,
   instance: ClazzInstance<TClass>,
 ) {
+  const metadataStorage = getMetadataStorage();
   const propertySet = getClassPlainProperties(instance);
   propertySet.forEach((property) => {
     const hasMetadata = !!metadataStorage.findBuilderAccessorsMetadata(classConstructor, property);
@@ -36,6 +37,7 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
 ): IBuilder<TOptionals, ClazzInstance<TClass>> {
+  const metadataStorage = getMetadataStorage();
   const instance: ClazzInstance<TClass> = new classConstructor(...parameters);
 
   if (!metadataStorage.hasInitializedAccessors(classConstructor)) {

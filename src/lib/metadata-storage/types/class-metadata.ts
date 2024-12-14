@@ -1,4 +1,4 @@
-import { Clazz } from './clazz';
+import { Clazz } from '../../types/clazz';
 
 export type ClassPropertyMetadata<T> = T & {
   target: Clazz;
