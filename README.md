@@ -33,8 +33,8 @@ pnpm add class-constructor
 
 # Compatibility
 
-This library uses Proxy, so it requires ES6+ environment.
-There may be shift from proxy in future updates, stay tuned.
+Latest version of the package uses objects instead of ES6 Proxy.
+It not only significantly improved performance, but also made the library compatible with older environments.
 
 # Builder pattern
 
