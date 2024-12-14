@@ -1,10 +1,10 @@
 import { getMetadataStorage } from './storage';
-import { Builder, Clazz, ClazzInstance, InstantiableClazz } from './types';
+import { Builder, ClassInstance, Clazz, InstantiableClazz } from './types';
 import { getClassPlainProperties } from './util/get-class-plain-properties';
 
 function setAccessorsForClassProperties<TClass extends Clazz>(
   classConstructor: TClass,
-  instance: ClazzInstance<TClass>,
+  instance: ClassInstance<TClass>,
 ) {
   const metadataStorage = getMetadataStorage();
   const propertySet = getClassPlainProperties(instance);
@@ -33,12 +33,12 @@ function setAccessorsForClassProperties<TClass extends Clazz>(
  * @returns A builder instance that provides fluent methods for setting optional properties
  *
  */
-export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals = ClazzInstance<TClass>>(
+export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals = ClassInstance<TClass>>(
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
-): Builder<TOptionals, ClazzInstance<TClass>> {
+): Builder<TOptionals, ClassInstance<TClass>> {
   const metadataStorage = getMetadataStorage();
-  const instance: ClazzInstance<TClass> = new classConstructor(...parameters);
+  const instance: ClassInstance<TClass> = new classConstructor(...parameters);
 
   if (!metadataStorage.hasInitializedAccessors(classConstructor)) {
     setAccessorsForClassProperties(classConstructor, instance);
@@ -83,5 +83,5 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
     },
   );
 
-  return builder as Builder<TOptionals, ClazzInstance<TClass>>;
+  return builder as Builder<TOptionals, ClassInstance<TClass>>;
 }
