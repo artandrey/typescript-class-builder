@@ -34,8 +34,6 @@ export interface BuilderObject<TClass extends InstantiableClazz = any> {
   build: () => ClassInstance<TClass>;
 }
 
-const cachedBuilderObjects = new Map<InstantiableClazz, Partial<BuilderObject>>();
-
 function createClassBuilderObject<TClass extends InstantiableClazz>(classConstructor: TClass) {
   const metadataStorage = getMetadataStorage();
   const builderAccessors = metadataStorage.getBuilderAccessors(classConstructor);
@@ -92,8 +90,10 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
   if (!metadataStorage.hasInitializedAccessors(classConstructor)) {
     setAccessorsForClassProperties(classConstructor, instance);
   }
-  const builderObject = cachedBuilderObjects.get(classConstructor) || createClassBuilderObject(classConstructor);
-  cachedBuilderObjects.set(classConstructor, builderObject);
+
+  const builderObject =
+    metadataStorage.getCachedBuilderObject(classConstructor) || createClassBuilderObject(classConstructor);
+  metadataStorage.setCachedBuilderObject(classConstructor, builderObject);
   const builder = Object.create(builderObject, { instance: { value: instance } });
 
   return builder as Builder<TOptionals, ClassInstance<TClass>>;

@@ -1,4 +1,5 @@
-import { Clazz } from '../types';
+import { BuilderObject } from '../parametrized-builder';
+import { Clazz, InstantiableClazz } from '../types';
 import { BuilderAccessorsMetadata } from './types/builder-accessors-metadata';
 import { ClassPropertyMetadata } from './types/class-metadata';
 
@@ -9,6 +10,7 @@ export class MetadataStorage {
   > = new Map();
   private _ancestorsMap = new Map<Clazz, Clazz[]>();
   private readonly _initializedAccessorsClasses = new Set<Clazz>();
+  private readonly _cachedBuilderObjects = new Map<InstantiableClazz, Partial<BuilderObject>>();
 
   addBuilderAccessorsMetadata(metadata: ClassPropertyMetadata<BuilderAccessorsMetadata>): void {
     if (!this._builderAccessorsMetadata.has(metadata.target)) {
@@ -35,6 +37,7 @@ export class MetadataStorage {
     this._ancestorsMap.clear();
     this._builderAccessorsMetadata.clear();
     this._initializedAccessorsClasses.clear();
+    this._cachedBuilderObjects.clear();
   }
 
   private getMetadata<T>(
@@ -109,5 +112,18 @@ export class MetadataStorage {
 
   hasInitializedAccessors(clazz: Clazz): boolean {
     return this._initializedAccessorsClasses.has(clazz);
+  }
+
+  getCachedBuilderObject<TClass extends InstantiableClazz>(
+    classConstructor: TClass,
+  ): Partial<BuilderObject> | undefined {
+    return this._cachedBuilderObjects.get(classConstructor);
+  }
+
+  setCachedBuilderObject<TClass extends InstantiableClazz>(
+    classConstructor: TClass,
+    builderObject: Partial<BuilderObject>,
+  ): void {
+    this._cachedBuilderObjects.set(classConstructor, builderObject);
   }
 }
