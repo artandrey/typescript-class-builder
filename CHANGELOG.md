@@ -1,5 +1,11 @@
 # class-builder
 
+## 0.2.0
+
+### Minor Changes
+
+- f68e098: Replace ES6 Proxy with prebuilt builder objects using prototypes, which increased builder performance up to 3.3x times
+
 ## 0.1.0
 
 ### Minor Changes
