@@ -1,16 +1,19 @@
-import { ClassMetadata, Clazz } from '../types';
+import { ClassPropertyMetadata, Clazz } from '../types';
 import { BuilderAccessorsMetadata } from '../types/builder-accessors-metadata';
 
 export class MetadataStorage {
-  private readonly _builderAccessorsMetadata: Map<Clazz, Map<PropertyKey, ClassMetadata<BuilderAccessorsMetadata>>> =
-    new Map();
+  private readonly _builderAccessorsMetadata: Map<
+    Clazz,
+    Map<PropertyKey, ClassPropertyMetadata<BuilderAccessorsMetadata>>
+  > = new Map();
   private _ancestorsMap = new Map<Clazz, Clazz[]>();
+  private readonly _initializedAccessorsClasses = new Set<Clazz>();
 
-  addBuilderAccessorsMetadata(metadata: ClassMetadata<BuilderAccessorsMetadata>): void {
+  addBuilderAccessorsMetadata(metadata: ClassPropertyMetadata<BuilderAccessorsMetadata>): void {
     if (!this._builderAccessorsMetadata.has(metadata.target)) {
       this._builderAccessorsMetadata.set(
         metadata.target,
-        new Map<PropertyKey, ClassMetadata<BuilderAccessorsMetadata>>(),
+        new Map<PropertyKey, ClassPropertyMetadata<BuilderAccessorsMetadata>>(),
       );
     }
     this._builderAccessorsMetadata.get(metadata.target)!.set(metadata.propertyKey, metadata);
@@ -19,30 +22,31 @@ export class MetadataStorage {
   findBuilderAccessorsMetadata(
     target: Clazz,
     propertyName: string,
-  ): ClassMetadata<BuilderAccessorsMetadata> | undefined {
+  ): ClassPropertyMetadata<BuilderAccessorsMetadata> | undefined {
     return this.findMetadata(this._builderAccessorsMetadata, target, propertyName);
   }
 
-  getBuilderAccessors(target: Clazz): ClassMetadata<BuilderAccessorsMetadata>[] {
+  getBuilderAccessors(target: Clazz): ClassPropertyMetadata<BuilderAccessorsMetadata>[] {
     return this.getMetadata(this._builderAccessorsMetadata, target);
   }
 
   clear(): void {
     this._ancestorsMap.clear();
     this._builderAccessorsMetadata.clear();
+    this._initializedAccessorsClasses.clear();
   }
 
   private getMetadata<T>(
-    metadataMap: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
+    metadataMap: Map<Clazz, Map<PropertyKey, ClassPropertyMetadata<T>>>,
     target: Clazz,
-  ): ClassMetadata<T>[] {
+  ): ClassPropertyMetadata<T>[] {
     const metadataFromTargetMap = metadataMap.get(target);
-    let metadataFromTarget: ClassMetadata<T>[] = [];
+    let metadataFromTarget: ClassPropertyMetadata<T>[] = [];
     if (metadataFromTargetMap) {
       metadataFromTarget = Array.from(metadataFromTargetMap.values());
     }
 
-    const metadataFromAncestors: ClassMetadata<T>[] = [];
+    const metadataFromAncestors: ClassPropertyMetadata<T>[] = [];
     for (const ancestor of this.getAncestors(target) ?? []) {
       const ancestorMetadataMap = metadataMap.get(ancestor);
       if (ancestorMetadataMap) {
@@ -54,10 +58,10 @@ export class MetadataStorage {
   }
 
   private findMetadata<T>(
-    metadataMap: Map<Clazz, Map<PropertyKey, ClassMetadata<T>>>,
+    metadataMap: Map<Clazz, Map<PropertyKey, ClassPropertyMetadata<T>>>,
     target: Clazz,
     propertyKey: PropertyKey,
-  ): ClassMetadata<T> | undefined {
+  ): ClassPropertyMetadata<T> | undefined {
     const metadataFromTargetMap = metadataMap.get(target);
     if (metadataFromTargetMap) {
       const metadataFromTarget = metadataFromTargetMap.get(propertyKey);
@@ -96,5 +100,13 @@ export class MetadataStorage {
       this._ancestorsMap.set(target, ancestors);
     }
     return this._ancestorsMap.get(target);
+  }
+
+  addInitializedAccessorsClass(clazz: Clazz): void {
+    this._initializedAccessorsClasses.add(clazz);
+  }
+
+  hasInitializedAccessors(clazz: Clazz): boolean {
+    return this._initializedAccessorsClasses.has(clazz);
   }
 }

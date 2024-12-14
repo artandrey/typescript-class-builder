@@ -2,8 +2,6 @@ import { metadataStorage } from './storage';
 import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
 import { getClassPlainProperties } from './util/get-class-plain-properties';
 
-const classesWithInitializedAccessors = new Set<Clazz>();
-
 function setAccessorsForClassProperties<TClass extends Clazz>(
   classConstructor: TClass,
   instance: ClazzInstance<TClass>,
@@ -23,7 +21,7 @@ function setAccessorsForClassProperties<TClass extends Clazz>(
       });
     }
   });
-  classesWithInitializedAccessors.add(classConstructor);
+  metadataStorage.addInitializedAccessorsClass(classConstructor);
 }
 
 /**
@@ -40,7 +38,7 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
 ): IBuilder<TOptionals, ClazzInstance<TClass>> {
   const instance: ClazzInstance<TClass> = new classConstructor(...parameters);
 
-  if (!classesWithInitializedAccessors.has(classConstructor)) {
+  if (!metadataStorage.hasInitializedAccessors(classConstructor)) {
     setAccessorsForClassProperties(classConstructor, instance);
   }
 

@@ -1,8 +1,8 @@
 import { MetadataStorage } from '~lib/metadata-storage';
-import { ClassMetadata } from '~lib/types';
+import { ClassPropertyMetadata } from '~lib/types';
 import { BuilderAccessorsMetadata } from '~lib/types/builder-accessors-metadata';
 
-type StoredBuilderAccessorsMetadata = ClassMetadata<BuilderAccessorsMetadata>;
+type StoredBuilderAccessorsMetadata = ClassPropertyMetadata<BuilderAccessorsMetadata>;
 
 describe('MetadataStorage', () => {
   let storage: MetadataStorage;
@@ -111,6 +111,27 @@ describe('MetadataStorage', () => {
 
       const result = storage.findBuilderAccessorsMetadata(TestClass, 'testProp');
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('initialized accessors tracking', () => {
+    it('should track initialized accessors classes', () => {
+      class TestClass {}
+
+      expect(storage.hasInitializedAccessors(TestClass)).toBeFalsy();
+
+      storage.addInitializedAccessorsClass(TestClass);
+
+      expect(storage.hasInitializedAccessors(TestClass)).toBeTruthy();
+    });
+
+    it('should clear initialized accessors classes when clearing storage', () => {
+      class TestClass {}
+
+      storage.addInitializedAccessorsClass(TestClass);
+      storage.clear();
+
+      expect(storage.hasInitializedAccessors(TestClass)).toBeFalsy();
     });
   });
 });

@@ -4,4 +4,4 @@
 - [x] Improve performance of direct filer access by adding setter function for each class to accessors metadata instead of `instance[propertyKey] = value`
 - [x] Update README.md to describe latest api
 - [ ] Make metadataStorage private with all its types
-- [ ] Move classesWithInitializedAccessors from [parametrized-builder.ts](./src/lib/parametrized-builder.ts) to metadataStorage
+- [x] Move classesWithInitializedAccessors from [parametrized-builder.ts](./src/lib/parametrized-builder.ts) to metadataStorage
