@@ -7,4 +7,4 @@
 - [x] Move classesWithInitializedAccessors from [parametrized-builder.ts](./src/lib/parametrized-builder.ts) to metadataStorage
 
 - [x] Replace proxy with prototype to improve performance
-- [ ] Move builderObject to metadataStorage
+- [x] Move builderObject to metadataStorage
