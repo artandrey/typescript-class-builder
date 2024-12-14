@@ -133,4 +133,35 @@ describe('MetadataStorage', () => {
       expect(storage.hasInitializedAccessors(TestClass)).toBeFalsy();
     });
   });
+
+  describe('builder object caching', () => {
+    it('should store and retrieve cached builder objects', () => {
+      class TestClass {}
+
+      const builderObject = {
+        build: () => ({}),
+        someProperty: () => ({}),
+      };
+
+      storage.setCachedBuilderObject(TestClass, builderObject);
+
+      const retrieved = storage.getCachedBuilderObject(TestClass);
+      expect(retrieved).toBe(builderObject);
+    });
+
+    it('should clear cached builder objects when clearing storage', () => {
+      class TestClass {}
+
+      const builderObject = {
+        build: () => ({}),
+        someProperty: () => ({}),
+      };
+
+      storage.setCachedBuilderObject(TestClass, builderObject);
+      storage.clear();
+
+      const retrieved = storage.getCachedBuilderObject(TestClass);
+      expect(retrieved).toBeUndefined();
+    });
+  });
 });
