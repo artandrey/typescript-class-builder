@@ -1,3 +1,5 @@
+import { BuilderContract } from './builder';
+
 export class UsingBuilderImplementationClass {
   private constructor(
     private _optionalProperty1?: string,
@@ -22,7 +24,7 @@ export class UsingBuilderImplementationClass {
     private _optionalProperty20?: string,
   ) {}
 
-  private static Builder = class Builder {
+  private static Builder = class Builder implements BuilderContract {
     _optionalProperty1?: string;
     _optionalProperty2?: string;
     _optionalProperty3?: string;
