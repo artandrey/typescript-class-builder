@@ -1,10 +1,10 @@
 // Rename `createBuilderMethodFactory` to `toBuilder` as `toBuilderMethod(MyClass).withOptionals<MyClassOptionals>()` and `toBuilderMethod(MyClass).classAsOptionals()` ?
 import { ParametrizedBuilder } from './parametrized-builder';
-import { ClazzInstance, IBuilder, InstantiableClazz } from './types';
+import { Builder, ClazzInstance, InstantiableClazz } from './types';
 
 export interface BuilderMethodFactory<TClass extends InstantiableClazz> {
-  withOptionals<TOptionals>(): (...args: ConstructorParameters<TClass>) => IBuilder<TOptionals, ClazzInstance<TClass>>;
-  classAsOptionals(): (...args: ConstructorParameters<TClass>) => IBuilder<TClass, ClazzInstance<TClass>>;
+  withOptionals<TOptionals>(): (...args: ConstructorParameters<TClass>) => Builder<TOptionals, ClazzInstance<TClass>>;
+  classAsOptionals(): (...args: ConstructorParameters<TClass>) => Builder<TClass, ClazzInstance<TClass>>;
 }
 
 /**

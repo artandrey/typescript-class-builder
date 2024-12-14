@@ -11,15 +11,15 @@
  *   optionalProperty?: string;
  * }
  *
- * const builder: IBuilder<Options, MyClass> = MyClass.builder('required');
+ * const builder: Builder<Options, MyClass> = MyClass.builder('required');
  * const instance = builder
  *   .optionalProperty('value')  // Set value
  *   .optionalProperty()         // Get current value
  *   .build();                   // Create instance
  * ```
  */
-export type IBuilder<TOptionals, TClass> = {
-  [K in keyof TOptionals]-?: ((arg: TOptionals[K]) => IBuilder<TOptionals, TClass>) & (() => TOptionals[K]);
+export type Builder<TOptionals, TClass> = {
+  [K in keyof TOptionals]-?: ((arg: TOptionals[K]) => Builder<TOptionals, TClass>) & (() => TOptionals[K]);
 } & {
   build(): TClass;
 };

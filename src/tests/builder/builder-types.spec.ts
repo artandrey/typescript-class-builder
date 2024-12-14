@@ -1,4 +1,4 @@
-import { IBuilder, ParametrizedBuilder, toBuilderMethod } from '~lib/index';
+import { Builder, ParametrizedBuilder, toBuilderMethod } from '~lib/index';
 
 interface MyClassOptionals {
   optionalProperty?: string;
@@ -55,13 +55,13 @@ test('should return instance of class', () => {
 
 test('builder should contain property getter and setter', () => {
   expectTypeOf(MyClass.withOptionalsBuilder('requiredProperty').optionalProperty).toEqualTypeOf<
-    ((arg: string | undefined) => IBuilder<MyClassOptionals, MyClass>) & (() => string | undefined)
+    ((arg: string | undefined) => Builder<MyClassOptionals, MyClass>) & (() => string | undefined)
   >();
 });
 
 test('builder should contain property setter', () => {
   expectTypeOf(MyClass.withOptionalsBuilder('requiredProperty').optionalProperty('new value')).toEqualTypeOf<
-    IBuilder<MyClassOptionals, MyClass>
+    Builder<MyClassOptionals, MyClass>
   >();
 });
 

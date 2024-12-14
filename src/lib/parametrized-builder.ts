@@ -1,5 +1,5 @@
 import { getMetadataStorage } from './storage';
-import { Clazz, ClazzInstance, IBuilder, InstantiableClazz } from './types';
+import { Builder, Clazz, ClazzInstance, InstantiableClazz } from './types';
 import { getClassPlainProperties } from './util/get-class-plain-properties';
 
 function setAccessorsForClassProperties<TClass extends Clazz>(
@@ -36,7 +36,7 @@ function setAccessorsForClassProperties<TClass extends Clazz>(
 export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals = ClazzInstance<TClass>>(
   classConstructor: TClass,
   parameters: ConstructorParameters<TClass>,
-): IBuilder<TOptionals, ClazzInstance<TClass>> {
+): Builder<TOptionals, ClazzInstance<TClass>> {
   const metadataStorage = getMetadataStorage();
   const instance: ClazzInstance<TClass> = new classConstructor(...parameters);
 
@@ -83,5 +83,5 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
     },
   );
 
-  return builder as IBuilder<TOptionals, ClazzInstance<TClass>>;
+  return builder as Builder<TOptionals, ClazzInstance<TClass>>;
 }
