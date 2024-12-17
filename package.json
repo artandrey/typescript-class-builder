@@ -16,7 +16,7 @@
     "prepare": "husky",
     "pre-commit": "lint-staged",
     "build": "tsup",
-    "publish": "changeset publish"
+    "release": "changeset publish"
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,ts}": [
