@@ -1,5 +1,11 @@
 # class-builder
 
+## 0.2.2
+
+### Patch Changes
+
+- d0367fa: Change builder creation process: switch from Object.create to Object.setPrototypeOf to increase performance. Update documentation: add note about useDefineForClassFields property in tsconfig
+
 ## 0.2.1
 
 ### Patch Changes
