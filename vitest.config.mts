@@ -13,7 +13,7 @@ export default defineConfig({
     benchmark: {
       include: ['src/tests/benchmarks/**/*.bench.ts'],
       outputJson: './.benchmarks/prototype-results.json',
-      compare: './.benchmarks/proxy-results.json',
+      compare: './.benchmarks/prototype-results-0.2.1.json',
     },
   },
   plugins: [

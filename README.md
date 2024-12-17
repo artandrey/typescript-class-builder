@@ -31,10 +31,24 @@ or
 pnpm add class-constructor
 ```
 
+**Important!**
+
+Make following changes in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    // set useDefineForClassFields to true for correct class fields initialization
+    // this option will set undefined to uninitialized fields that will allow builder to track them
+    "useDefineForClassFields": true
+  }
+}
+```
+
 # Compatibility
 
 Latest version of the package uses objects instead of ES6 Proxy.
-It not only significantly improved performance, but also made the library compatible with older environments.
+It not only significantly improved performance, but also made the library compatible with older environments (just make sure you have `useDefineForClassFields` set to `true` in your `tsconfig.json`).
 
 # Builder pattern
 

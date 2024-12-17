@@ -94,7 +94,7 @@ export function ParametrizedBuilder<TClass extends InstantiableClazz, TOptionals
   const builderObject =
     metadataStorage.getCachedBuilderObject(classConstructor) || createClassBuilderObject(classConstructor);
   metadataStorage.setCachedBuilderObject(classConstructor, builderObject);
-  const builder = Object.create(builderObject, { instance: { value: instance } });
+  const builder = Object.setPrototypeOf({ instance: instance }, builderObject);
 
   return builder as Builder<TOptionals, ClassInstance<TClass>>;
 }
