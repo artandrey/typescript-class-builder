@@ -1,6 +1,6 @@
 {
   "name": "class-constructor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tool to implement builder pattern that actually uses class constructor with ease",
   "private": false,
   "main": "dist/index.js",

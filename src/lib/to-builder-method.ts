@@ -4,7 +4,7 @@ import { Builder, ClassInstance, InstantiableClazz } from './types';
 
 export interface BuilderMethodFactory<TClass extends InstantiableClazz> {
   withOptionals<TOptionals>(): (...args: ConstructorParameters<TClass>) => Builder<TOptionals, ClassInstance<TClass>>;
-  classAsOptionals(): (...args: ConstructorParameters<TClass>) => Builder<TClass, ClassInstance<TClass>>;
+  classAsOptionals(): (...args: ConstructorParameters<TClass>) => Builder<ClassInstance<TClass>, ClassInstance<TClass>>;
 }
 
 /**
@@ -37,7 +37,7 @@ export function toBuilderMethod<TClass extends InstantiableClazz>(clazz: TClass)
     },
     classAsOptionals: () => {
       return (...args: ConstructorParameters<TClass>) => {
-        return ParametrizedBuilder<TClass, TClass>(clazz, args);
+        return ParametrizedBuilder<TClass, ClassInstance<TClass>>(clazz, args);
       };
     },
   };

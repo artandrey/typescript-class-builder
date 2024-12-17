@@ -1,5 +1,11 @@
 # class-builder
 
+## 0.2.1
+
+### Patch Changes
+
+- Fix issue with missing properties for `classAsOptionals` of `toBuilderMethod`
+
 ## 0.2.0
 
 ### Minor Changes

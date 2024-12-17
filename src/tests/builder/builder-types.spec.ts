@@ -7,6 +7,7 @@ interface MyClassOptionals {
 class MyClass {
   private _optionalProperty?: string;
   private _requiredProperty: string;
+  public publicOptionalProperty?: string;
 
   constructor(requiredProperty: string) {
     this._requiredProperty = requiredProperty;
@@ -72,4 +73,10 @@ test('builder should contain property getter', () => {
 test('setter should accept correct value', () => {
   // @ts-expect-error - passed number instead of string
   assertType(MyClass.withOptionalsBuilder('requiredProperty').optionalProperty(1));
+});
+
+test('class as optionals should contain public properties', () => {
+  expectTypeOf(MyClass.classAsOptionalsBuilder('requiredProperty').publicOptionalProperty).toEqualTypeOf<
+    ((arg: string | undefined) => Builder<MyClass, MyClass>) & (() => string | undefined)
+  >();
 });
