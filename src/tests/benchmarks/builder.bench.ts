@@ -51,3 +51,9 @@ describe.each([
     },
   );
 });
+
+describe('builder creation', () => {
+  bench('parametrized builder', () => {
+    UsingBuilder.builder();
+  });
+});
