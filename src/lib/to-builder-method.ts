@@ -27,6 +27,16 @@ export interface BuilderMethodFactory<TClass extends InstantiableClazz> {
  *    static builder = toBuilderMethod(MyClass).withOptionals<MyOptionals>();
  *  }
  * ```
+ * @example
+ * ```typescript
+ *
+ *  class MyClass {
+ *    constructor(public required: string) {}
+ *    public optional?: string;
+ *
+ *    static builder = toBuilderMethod(MyClass).classAsOptionals();
+ *  }
+ * ```
  */
 export function toBuilderMethod<TClass extends InstantiableClazz>(clazz: TClass): BuilderMethodFactory<TClass> {
   return {
