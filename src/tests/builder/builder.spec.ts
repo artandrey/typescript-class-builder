@@ -189,4 +189,17 @@ describe('builder', () => {
     builder.optionalProperty('value');
     expect(builder.optionalProperty()).toBe('getter_value');
   });
+
+  it('should prioritize exact property name over underscored (private)', () => {
+    class MyClass {
+      public _optionalProperty?: string;
+      public optionalProperty?: string;
+    }
+
+    const instance = ParametrizedBuilder<typeof MyClass, WithOptionalProperty>(MyClass, [])
+      .optionalProperty('value')
+      .build();
+    expect(instance.optionalProperty).toBe('value');
+    expect(instance._optionalProperty).toBeUndefined();
+  });
 });
