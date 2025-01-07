@@ -1,13 +1,16 @@
 # Introduction
 
 This library is designed to help you build classes with optional properties using the builder pattern.
+It discovers class fields and creates optimized builder that works faster than implicit builder implementation.
+
+According to benchmarks, the generated builder is up to **25%** faster than traditional builder implementations.
 
 ## Navigation
 
 - [Installation](#installation)
 - [Compatibility](#compatibility)
 - [Builder pattern](#builder-pattern)
-- [This library](#this-library)
+- [Examples](#examples)
   - [Basic usage](#basic-usage)
   - [Default values](#default-values)
   - [Private properties](#private-properties)
@@ -35,20 +38,26 @@ pnpm add class-constructor
 
 Make following changes in your `tsconfig.json`:
 
-```json
+```js
 {
   "compilerOptions": {
     // set useDefineForClassFields to true for correct class fields initialization
     // this option will set undefined to uninitialized fields that will allow builder to track them
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+    // or target is ES2022 or higher
+    "target": "ES2022",
+    // note: that is highly recommended to set target to ES2022 or higher
+
   }
 }
 ```
 
+That will enable usage of upcoming standard version of class fields, that is necessary for builder to index fields.
+
 # Compatibility
 
-Latest version of the package uses objects instead of ES6 Proxy.
-It not only significantly improved performance, but also made the library compatible with older environments (just make sure you have `useDefineForClassFields` set to `true` in your `tsconfig.json`).
+Latest version of the package gets rid of ES6 Proxy.
+It not only significantly improved performance, but also made the library compatible with older environments (just make sure you have `useDefineForClassFields` set to `true` in your `tsconfig.json`). For target lower than ES2022, there may be issues with performance, but that was not proved yet.
 
 # Builder pattern
 
@@ -69,7 +78,7 @@ Button.builder('Click me').withColor('red').build();
 
 But, the builder pattern is not easy to implement, and it requires a lot of boilerplate code.
 
-# This library
+# Examples
 
 `class-constructor` library allows you to create builders with just few lines of code.
 
