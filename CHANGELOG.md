@@ -1,5 +1,11 @@
 # class-builder
 
+## 0.2.3
+
+### Patch Changes
+
+- 94efc69: Update documentation and JSDoc
+
 ## 0.2.2
 
 ### Patch Changes
